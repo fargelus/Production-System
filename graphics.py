@@ -5,7 +5,7 @@ __author__ = 'dima'
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter.messagebox import *
-from data import *
+import data
 
 
 class Entrance(Frame):
@@ -34,59 +34,49 @@ class Entrance(Frame):
                             'Вы хотите выбрать другой файл?')
             if answ:
                 self.entry.delete(0, END)
-                open_file = askopenfilename()
+                open_file = askopenfilename(defaultextension='.db', filetypes=[('Database', '.db'),
+                                                                               ('SQLite3', '.sqlite3'),
+                                                                               ('SQLite', '.sqlite')])
                 self.entry.insert(0, open_file)
         else:
-            open_file = askopenfilename()
+            open_file = askopenfilename(defaultextension='.db', filetypes=[('Database', '.db'),
+                                                                           ('SQLite3', '.sqlite3'),
+                                                                           ('SQLite', '.sqlite')])
             self.entry.insert(0, open_file)
 
     def read_file(self):
         filename = self.entry.get()
 
-        try:
-            file_to_read = open(filename)
-            data_in_file = file_to_read.readlines()
+        if '.json' not in filename:
+            if '.JSON' not in filename:
+                showinfo('Формат базы знаний', 'База знаний представляет файл в формате JSON =>\n'
+                                               'необходимо чтобы расширение файла было '
+                                               'в этом формате')
+                return
 
-
-            p_ent = data_in_file.index('Entitys:\n')
-            p_rel = data_in_file.index('Relations:\n')
-            p_rule = data_in_file.index('Rules:\n')
-            end = len(data_in_file)
-
-            read_entitys(data_in_file, p_ent + 1, p_rel - 1)
-            make_relations(data_in_file, p_rel + 1, p_rule - 1)
-            parse_rules(data_in_file, p_rule + 1, end)
-
-        except FileNotFoundError as err:
-            showerror('Open error', str(err))
-
-        except UnboundLocalError:  # ?
-            pass
-
-        finally:
-            file_to_read.close()
-
+        showinfo('Бинго', 'База знаний успешно считана')
         self.destroy()
-
-        mw = MainWindow()
-
-        for item in data_in_file:
-            mw.source_txt.insert(END, item)
-
-        mw.mainloop()
+        file_handler = open(filename, 'r')
+        base = file_handler.readlines()
+        MainWindow(text_=base).mainloop()
 
 
 class MainWindow(Frame):
-    def __init__(self, parent=None):
+    def __init__(self, text_, parent=None):
         Frame.__init__(self, parent)
         self.master.title('Продукционная система')
         self.pack()
         self.focus_set()
 
+        self.text = text_
+
         self.src_label = Label(self, text='Исходные сущности и связи', font=('times', 12, 'italic bold'))
         self.dest_label = Label(self, text='Вывод', font=('times', 12, 'italic bold'))
 
         self.source_txt = Text(self)
+        for item in text_:
+            self.source_txt.insert(END, item)
+
         self.process_btn = Button(self, text='=>', font='16', command=self.get_result)
         self.sys_txt = Text(self)
 
@@ -102,7 +92,7 @@ class MainWindow(Frame):
         self.sys_txt.grid(row=1, column=2)
 
     def get_result(self):
-        get_new_entitys()
+        data.main(self.text)
 
         for item in open('output.txt'):
             self.sys_txt.insert(END, item)

@@ -1,115 +1,79 @@
 __author__ = 'dima'
 
+import json
+from tkinter.messagebox import showerror
 
-list_of_entitys = list()
-
-relations = list()      # списки смежности
+ENTITY = dict()
+RELS = dict()
 _ = float('inf')
 
 
-def read_entitys(data, src, dest):
-    """
-    :param data: данные в файле
-    :param src: позиция для считывания сущности
-    :param dest: позиция останова
-    :return: None
-    """
-    while src < dest:
-        line = data[src]
-        line = line.strip()
-        key = int(line[0])
-        val = line[2:]
-        entity = dict()
-        entity[key] = val
-        list_of_entitys.append(entity)
-        src += 1
+def parse_base(records):
+    global ENTITY, RELS, RULES
 
-    for item in list_of_entitys:
-        print(item)
+    json_str = str()
+    for line in records:
+        json_str += line
+
+    parse_data = json.loads(json_str)
+    ENTITY = parse_data["Entity"]
+    RELS = parse_data["Rels"]
 
 
-def make_relations(data, src, dest):
-    """
-    :param data: данные в файле
-    :param src: позиция для считывания отн-я
-    :param dest: позиция останова
-    :return:
-    """
-    relation_val_list = []
-    while src < dest:
-        line = data[src]
-        line = line.strip()
-        digit_list = [int(line[i]) - 1 for i in range(len(line)) if line[i].isdigit()]
-        print(digit_list)
-        relation_val_list.append(digit_list)
-        src += 1
+def make_graph(records):
+    parse_base(records)
 
-    fill_relations_matrix(relation_val_list)
+    size = len(ENTITY)
+    matrix = [[_] * size for i in range(size)]
 
-
-def fill_relations_matrix(relation_val_list):
-    """  заполняем нашу матрицу списком отношений -> создаём граф """
-    global relations
-    n = len(list_of_entitys)
-    relations = [[_] * n for i in range(n)]
-
-    for i in range(len(relation_val_list)):
-        for j in range(len(relation_val_list) - 1):
-            x = relation_val_list[i][j]
-            y = relation_val_list[i][j+1]
-            relations[x][y] = 1
-
-    for i in range(n):
-        for j in range(n):
+    for i in range(size):
+        for j in range(size):
             if i == j:
-                relations[i][j] = 0
+                matrix[i][j] = 0
+
+    for key, value in sorted(RELS.items()):
+        matrix[int(key)-1][int(value)-1] = 1
+
+    return matrix
 
 
-def parse_rules(data, src, dest):
-    """ парсим правила, если что-то x то y """
-    global relations
-    rules_dict = dict()
-    while src < dest:
-        line = data[src]
-        line = line.strip()
-        pos_then = line.find('->')
-        condition = line[:pos_then]
-        conclusion = line[pos_then + 1:]
-        condition_entity = [int(condition[i]) - 1 for i in range(len(condition)) if condition[i].isdigit()]
-        print(condition_entity)
-        conclusion_entity = [int(conclusion[i]) - 1 for i in range(len(conclusion)) if conclusion[i].isdigit()]
-        print(conclusion_entity)
-        src += 1
-        rules_dict[condition_entity[0]] = conclusion_entity[0]
+def add_rules(matrix):
+    """ добавляем правило вида x->y->z => x->z """
+    new_rels = dict()
+    for key in sorted(RELS):
+        for reverse_key in sorted(RELS, reverse=True):
+            if key == reverse_key:
+                break
+            if RELS[key] == reverse_key:
+                new_rels[key] = RELS[reverse_key]
 
-    size = len(relations)
-    for key in rules_dict:
+    for key, value in new_rels.items():
+        matrix[int(key)-1][int(value)-1] = 1
+
+    print(matrix)
+
+
+def parse_matrix(matrix):
+    filename = '/home/dima/Рабочий стол/Production System/output.txt'
+    try:
+        f_write = open(filename, 'w')
+        size = len(matrix)
+        is_a = 'есть'
+        space = ' '
         for i in range(size):
-            if relations[i][key] == 1:
-                relations[i][rules_dict[key]] = 1
+            for j in range(size):
+                if matrix[i][j] != 0 and matrix[i][j] != _:
+                    line = ENTITY[str(i+1)] + space + is_a + space + ENTITY[str(j+1)] + '\n'
+                    f_write.write(line)
+
+    except IOError:
+        showerror('Ошибка', 'Невозможно открыть файл для записи')
 
 
-def get_new_entitys():
-    """ обходим граф, и выводим в файл,
-        новые сущности """
-    file_to_write = open('output.txt', 'w')
-    file_to_write.write('New Entitys:\n')
+def main(records):
+    parse_base(records)
+    matrix = make_graph(records)
+    add_rules(matrix)
+    parse_matrix(matrix)
 
-    n = len(relations)
-    for i in range(n):
-        for j in range(n):
-            if relations[i][j] == 1:
-                src = i + 1
-                dest = j + 1
-                copy_entitys = list_of_entitys[:]
-                flag = False
-                while len(copy_entitys) > 0:
-                    entity = copy_entitys.pop(0)
-                    if src in entity.keys():
-                        flag = True
-                        print(entity[src], '->', end=' ', file=file_to_write)
-                    if dest in entity.keys() and flag:
-                        flag = False
-                        print(entity[dest], file=file_to_write)
 
-    file_to_write.close()
