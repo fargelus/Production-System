@@ -78,7 +78,11 @@ class MainWindow(Frame):
             self.source_txt.insert(END, item)
 
         self.process_btn = Button(self, text='=>', font='16', command=self.get_result)
+
         self.sys_txt = Text(self)
+
+        self.buffer_btn = Button(self, text='Показать буфер', font=('Times', 12, 'italic bold'),
+                                 command=self.show_buffer, width=67, pady=5)
 
         self.bind('<Return>', lambda event: self.get_result())
 
@@ -90,6 +94,7 @@ class MainWindow(Frame):
         self.process_btn.grid(row=1, column=1)
         self.dest_label.grid(row=0, column=2)
         self.sys_txt.grid(row=1, column=2)
+        self.buffer_btn.grid(row=2, column=2)
 
     def get_result(self):
         data.main(self.text)
@@ -97,6 +102,8 @@ class MainWindow(Frame):
         for item in open('output.txt'):
             self.sys_txt.insert(END, item)
 
+    def show_buffer(self):
+        pass
 
 if __name__ == '__main__':
     Entrance().mainloop()
