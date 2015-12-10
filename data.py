@@ -200,7 +200,13 @@ def add_similarity(matrix, size):
             angles_in_obj.append(first_one)
 
     matrix = make_similarity(matrix.copy(), angles_in_obj[:])
-    
+    for i in range(21, 24):
+        print(ENTITY[str(i+1)], ' состоит из: ')
+        for j in range(size):
+            if matrix[i][j] == 3:
+                print(ENTITY[str(j+1)], end=' ')
+        print()
+
 
 def make_similarity(matrix, angles_in_obj):
     """ добавляем условие подобия """
@@ -243,15 +249,19 @@ def make_similarity(matrix, angles_in_obj):
                 # узнаём в какой узел вести связь
 
                 link_to = None
+                link_number = None
                 for item in simil_triangle_list:
                     if ENTITY[x] in ENTITY[item] and ENTITY[y] in ENTITY[item]:
                         link_to = ENTITY[item]
+                        link_number = int(item) - 1
                         break
 
-                matrix[ENTITY[x]][link_to] = 2
-                matrix[link_to][ENTITY[x]] = 3
-                matrix[ENTITY[y]][link_to] = 2
-                matrix[link_to][ENTITY[y]] = 3
+                real_x = int(x) - 1
+                real_y = int(y) - 1
+                matrix[real_x][link_number] = 2
+                matrix[link_number][real_x] = 3
+                matrix[real_y][link_number] = 2
+                matrix[link_number][real_y] = 3
     return matrix
 
 
