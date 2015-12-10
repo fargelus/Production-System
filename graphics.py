@@ -54,11 +54,20 @@ class Entrance(Frame):
                                                'в этом формате')
                 return
 
-        showinfo('Бинго', 'База знаний успешно считана')
-        self.destroy()
-        file_handler = open(filename, 'r')
+        try:
+            file_handler = open(filename, 'r')
+        except FileNotFoundError as err:
+            showerror('Ошибка открытия', str(err))
+            self.entry.delete(0, END)
+            return
+
         base = file_handler.readlines()
-        MainWindow(text_=base).mainloop()
+        if base:
+            showinfo('Бинго', 'База знаний успешно считана')
+            self.destroy()
+            MainWindow(text_=base).mainloop()
+        else:
+            showwarning('Предупреждение', 'Возможно файл пуст. Я не могу его прочесть')
 
 
 class MainWindow(Frame):
@@ -77,12 +86,21 @@ class MainWindow(Frame):
         for item in text_:
             self.source_txt.insert(END, item)
 
+        self.src_bar = Scrollbar(self)
+        self.src_bar.config(command=self.source_txt.yview)
+        self.source_txt.config(yscrollcommand=self.src_bar.set)
+
         self.process_btn = Button(self, text='=>', font='16', command=self.get_result)
 
         self.sys_txt = Text(self)
 
+        self.sys_bar = Scrollbar(self)
+        self.sys_bar.config(command=self.sys_txt.yview)
+        self.sys_txt.config(yscrollcommand=self.sys_bar.set)
+
         self.buffer_btn = Button(self, text='Показать буфер', font=('Times', 12, 'italic bold'),
                                  command=self.show_buffer, width=67, pady=5)
+        self.buffer_btn['state'] = DISABLED
 
         self.bind('<Return>', lambda event: self.get_result())
 
@@ -90,17 +108,22 @@ class MainWindow(Frame):
 
     def place_widgets(self):
         self.src_label.grid(row=0, column=0)
+        self.src_bar.grid(row=1, column=1, sticky=NS)
         self.source_txt.grid(row=1, column=0)
-        self.process_btn.grid(row=1, column=1)
-        self.dest_label.grid(row=0, column=2)
-        self.sys_txt.grid(row=1, column=2)
-        self.buffer_btn.grid(row=2, column=2)
+        self.process_btn.grid(row=1, column=2)
+        self.dest_label.grid(row=0, column=3)
+        self.sys_bar.grid(row=1, column=4, sticky=NS)
+        self.sys_txt.grid(row=1, column=3)
+        self.buffer_btn.grid(row=2, column=3)
 
     def get_result(self):
         data.main(self.text)
 
-        for item in open('output.txt'):
-            self.sys_txt.insert(END, item)
+        # for item in open('output.txt'):
+        #     self.sys_txt.insert(END, item)
+
+        if self.sys_txt.get('1.0', END+'-1c'):
+            self.buffer_btn['state'] = NORMAL
 
     def show_buffer(self):
         pass

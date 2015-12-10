@@ -4,7 +4,7 @@
 		"1": "AB",
 		"2": "AC",
 		"3": "BC",
-		"4": "BH",
+		"4": "CH",
 		"5": "∠AHC",
 		"6": "∠BHC",
 		"7": "α",
@@ -18,21 +18,55 @@
 		"15": "∠CAH",
 		"16": "∠HCB",
 		"17": "∠CBH",
-		"18": "подобен",
-		"19": "(AB)*(AB)",
-		"20": "(AC)*(AC)",
-		"21": "(BC)*(BC)",
-		"22": "(AC)*(AC) + (BC)*(BC)",
-		"23": "ΔACB",
-		"24": "ΔAHB",
-		"25": "ΔCHB"
+		"18": "(AB)*(AB)",
+		"19": "(AC)*(AC)",
+		"20": "(BC)*(BC)",
+		"21": "(AC)*(AC) + (BC)*(BC)",
+		"22": "ΔACB",
+		"23": "ΔAHC",
+		"24": "ΔCHB",
+		"25": "ΔAHC ~ ΔACB",
+		"26": "ΔCHB ~ ΔACB",
+		"27": "ΔAHC ~ ΔCHB"
 	     },
     "Rels":
 	  {
-		"7": ["12", "15", "10"],
-		"9": ["17", "13", "8"],
-		"8": ["14", "17"],
-		"10": ["12", "16"],
-		"11": ["5", "6"]
+		
+		"7": [{ "to": "12", "type": "is are"},
+		      { "to": "15", "type": "is are"},
+		      { "to": "10", "type": "is are"},
+		      { "to": "23", "type": "part of"},
+		      { "to": "22", "type": "part of"}],
+
+		"9": [{ "to": "17", "type": "is are"},
+		      { "to": "13", "type": "is are"},
+		      { "to": "8", "type": "is are"},
+		      { "to": "24", "type": "part of"},
+		      { "to": "22", "type": "part of"}],
+
+		"8": [{ "to": "14", "type": "is are"},
+		      { "to": "17", "type": "is are"},
+		      { "to": "23", "type": "part of"},
+		      { "to": "24", "type": "part of"},
+		      { "to": "22", "type": "part of"}],		
+		
+		"10": [{ "to": "12", "type": "is are"},
+		       { "to": "16", "type": "is are"},
+		       { "to": "15", "type": "is are"},
+		       { "to": "22", "type": "part of"},
+		       { "to": "23", "type": "part of"},
+		       { "to": "24", "type": "part of"}],
+		
+		"11": [{ "to": "5", "type": "is are"},
+		       { "to": "6", "type": "is are"},
+		       { "to": "22", "type": "part of"}],
+
+		"22": [{ "to": "1", "type": "consist of"},
+		       { "to": "2", "type": "consist of"},
+		       { "to": "3", "type": "consist of"},
+		       { "to": "4", "type": "consist of"},
+		       { "to": "11", "type": "consist of"},
+		       { "to": "23", "type": "consist of"},
+		       { "to": "24", "type": "consist of"}]
 	  }
 }
