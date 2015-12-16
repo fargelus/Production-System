@@ -2,8 +2,6 @@ __author__ = 'dima'
 
 import json
 # from tkinter.messagebox import showerror
-from functools import reduce
-
 
 ENTITY = dict()
 RELS = dict()
@@ -165,6 +163,51 @@ def add_links_partof_cont(matrix, size):
             matrix[vertex][to_vertex] = 2
 
     # доп.связи
+    triangles = get_triangle_list()
+    vals = list(filter((lambda key: key if (ENTITY[key] == "∠AHC" or ENTITY[key] == "∠BHC") else None),
+                       ENTITY.keys()))
+    vals = sorted([int(val) - 1 for val in vals])
+    for i in range(triangles[0], triangles[-1] + 1):
+        for j in range(size):
+            if matrix[i][j] == 3:
+                if ENTITY[str(j + 1)] == "α":
+                    matrix[i][vals[0]] = 3
+                    matrix[vals[0]][i] = 2
+                if ENTITY[str(j + 1)] == "β":
+                    matrix[i][vals[-1]] = 3
+                    matrix[vals[-1]][i] = 2
+
+    matrix = add_another_partof_cont_links(part_of_list[:], cont_of_list[:],
+                                           matrix.copy(), size)
+
+    side_keys = ["AB", "AC", "BC", "CH", "AH", "BH"]
+    side = {ENTITY[key]: key for key in ENTITY.keys() if ENTITY[key] in side_keys}
+
+    for i in range(triangles[0], triangles[-1] + 1):
+        tmp_list = [i]
+        for j in range(size):
+            if matrix[i][j] == 3:
+                tmp_list.append(ENTITY[str(j + 1)])
+
+        if "∠AHC" in tmp_list and ENTITY[str(i+1)] != "ΔACB":
+            matrix[i][int(side["AH"]) - 1] = 3
+            matrix[int(side["AH"]) - 1][i] = 2
+            matrix[i][int(side["AC"]) - 1] = 3
+            matrix[int(side["AC"]) - 1][i] = 2
+            matrix[i][int(side["CH"]) - 1] = 3
+            matrix[int(side["CH"]) - 1][i] = 2
+        if "∠BHC" in tmp_list and ENTITY[str(i+1)] != "ΔACB":
+            matrix[i][int(side["BH"]) - 1] = 3
+            matrix[int(side["BH"]) - 1][i] = 2
+            matrix[i][int(side["BC"]) - 1] = 3
+            matrix[int(side["BC"]) - 1][i] = 2
+            matrix[i][int(side["CH"]) - 1] = 3
+            matrix[int(side["CH"]) - 1][i] = 2
+
+    return matrix
+
+
+def add_another_partof_cont_links(part_of_list, cont_of_list, matrix, size):
     for item in part_of_list:
         from_vertex_list = item[1:]
         to_vertex = item[0]
@@ -200,12 +243,11 @@ def add_similarity(matrix, size):
             angles_in_obj.append(first_one)
 
     matrix = make_similarity(matrix.copy(), angles_in_obj[:])
-    for i in range(21, 24):
-        print(ENTITY[str(i+1)], ' состоит из: ')
-        for j in range(size):
-            if matrix[i][j] == 3:
-                print(ENTITY[str(j+1)], end=' ')
-        print()
+    matrix = make_ratio(matrix.copy(), size)
+
+
+def get_simil_triangle_list():
+    return [int(keys) - 1 for keys in ENTITY if '~' in ENTITY[keys]]
 
 
 def make_similarity(matrix, angles_in_obj):
@@ -219,8 +261,7 @@ def make_similarity(matrix, angles_in_obj):
                 item.remove(r_angle)
 
     # находим утверждения про подобие
-    simil_triangle_list = [str(int(keys)) for keys in ENTITY if '~' in ENTITY[keys]]
-    print(simil_triangle_list)
+    simil_triangle_list = get_simil_triangle_list()
 
     angles_size = len(angles_in_obj)
     similarity_list = list()
@@ -248,12 +289,10 @@ def make_similarity(matrix, angles_in_obj):
                 # сделать связь подобие и тд
                 # узнаём в какой узел вести связь
 
-                link_to = None
                 link_number = None
                 for item in simil_triangle_list:
-                    if ENTITY[x] in ENTITY[item] and ENTITY[y] in ENTITY[item]:
-                        link_to = ENTITY[item]
-                        link_number = int(item) - 1
+                    if ENTITY[x] in ENTITY[str(item + 1)] and ENTITY[y] in ENTITY[str(item + 1)]:
+                        link_number = item
                         break
 
                 real_x = int(x) - 1
@@ -278,10 +317,94 @@ def parse_matrix(matrix):
     pass
 
 
+def make_ratio(matrix, size):
+    simil_triangle = sorted(get_simil_triangle_list())
+
+    number_simils = []
+    for i in range(simil_triangle[0], simil_triangle[-1] + 1):
+        for j in range(size):
+            select_col = (lambda row=i, col=j: col if matrix[row][col] == 3 else None)(i, j)
+            if select_col:
+                number_simils.append(select_col)
+
+    vals_keys = {ENTITY[key]: key for key in ENTITY.keys()}
+    for item in number_simils:
+        for j in range(size):
+            if matrix[item][j] == 3:
+                if ENTITY[str(j+1)] == "AC" and ENTITY[str(item+1)] != "ΔACB":
+                    main_from_ = int(vals_keys["AC*AC"]) - 1
+                    main_to = int(vals_keys["AB*AH"]) - 1
+                    matrix[main_from_][main_to] = 1
+                    matrix[main_to][main_from_] = 1
+                if ENTITY[str(j+1)] == "BC" and ENTITY[str(item+1)] != "ΔACB":
+                    main_from_ = int(vals_keys["BC*BC"]) - 1
+                    main_to = int(vals_keys["AB*BH"]) - 1
+                    matrix[main_from_][main_to] = 1
+                    matrix[main_to][main_from_] = 1
+
+    matrix = divide_multiple_objects(matrix.copy(), size)
+
+    new_part_of_list = make_vertex_list(matrix.copy(), size, 2)
+    new_cont_of_list = make_vertex_list(matrix.copy(), size, 3)
+    matrix = add_another_partof_cont_links(new_part_of_list, new_cont_of_list, matrix.copy(), size)
+
+    composite_obj_list = sorted(get_multiple_obj())
+    composite_obj_list = [obj for obj in composite_obj_list if '~' not in ENTITY[str(obj+1)]]
+    print(composite_obj_list)
+
+    for item in composite_obj_list:
+        print(ENTITY[str(item+1)], 'состоит из: ')
+        for j in range(size):
+            if matrix[item][j] == 3:
+                print(ENTITY[str(j+1)], end=' ')
+        print()
+
+    return matrix
+
+
+def divide_multiple_objects(matrix, size):
+    """ сделать связи part of, contains of для составных
+        объектов """
+    vals_keys = {ENTITY[key]: key for key in ENTITY.keys()}
+    mult_objects = get_multiple_obj()
+    for item in mult_objects:
+        object = ENTITY[str(item+1)]
+        middle = len(object) // 2
+        add_all_links(object, middle, matrix, vals_keys)
+
+    return matrix
+
+
+def add_all_links(object, middle, matrix, vals_keys):
+    if middle <= 1:
+        return
+    left_side = object[:middle]
+    left_side = left_side.strip()
+    right_side = object[middle:]
+    right_side = right_side.strip()
+    if len(left_side) == len(right_side) == 2:
+        key_from = int(vals_keys[object]) - 1
+        key_to_right = int(vals_keys[left_side]) - 1
+        key_to_left = int(vals_keys[right_side]) - 1
+        matrix[key_from][key_to_left] = 3
+        matrix[key_from][key_to_right] = 3
+        matrix[key_to_left][key_from] = 2
+        matrix[key_to_right][key_from] = 2
+    add_all_links(left_side, len(left_side)//2, matrix, vals_keys)
+    add_all_links(right_side, len(right_side)//2, matrix, vals_keys)
+
+
+def get_multiple_obj():
+    return [int(key) - 1 for key in ENTITY if len(ENTITY[key]) > 4]
+
+
+def get_triangle_list():
+    return sorted([int(key) - 1 for key in ENTITY if 'Δ' in ENTITY[key]
+                     and len(ENTITY[key]) == 4])
+
+
 def main(records):
     parse_base(records)
     matrix = make_graph(records)
     matrix = add_rules(matrix.copy())
     # parse_matrix(matrix)
-
-
