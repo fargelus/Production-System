@@ -9,6 +9,7 @@ _ = float('inf')
 
 
 def parse_base(records):
+    """ парсим исходную базу знаний """
     global ENTITY, RELS, RULES
 
     json_str = str()

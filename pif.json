@@ -32,7 +32,8 @@
 		"29": "BH",
 		"30": "AB*AH",
 		"31": "AB*BH",
-		"32": "AB*AH + AB*BH"
+		"32": "AB*AH + AB*BH",
+		"33": "AH + BH"
 	     },
     "Rels":
 	  {
@@ -72,6 +73,9 @@
 		       { "to": "4", "type": "consist of"},
 		       { "to": "11", "type": "consist of"},
 		       { "to": "23", "type": "consist of"},
-		       { "to": "24", "type": "consist of"}]
+		       { "to": "24", "type": "consist of"}],
+
+		"1": [{ "to": "28", "type": "consist of"},
+		      { "to": "29", "type": "consist of"}]
 	  }
 }
