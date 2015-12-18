@@ -119,14 +119,21 @@ class MainWindow(Frame):
     def get_result(self):
         data.main(self.text)
 
-        # for item in open('output.txt'):
-        #     self.sys_txt.insert(END, item)
+        if self.sys_txt.get('1.0', END+'-1c'):
+            self.sys_txt.delete('1.0', END)
+
+        for item in open('euristic.txt'):
+            self.sys_txt.insert(END, item)
 
         if self.sys_txt.get('1.0', END+'-1c'):
             self.buffer_btn['state'] = NORMAL
 
     def show_buffer(self):
-        pass
+        if self.sys_txt.get('1.0', END+'-1c'):
+            self.sys_txt.delete('1.0', END)
+        for item in open('output.txt'):
+            self.sys_txt.insert(END, item)
+
 
 if __name__ == '__main__':
     Entrance().mainloop()

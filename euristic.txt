@@ -1,0 +1,2 @@
+AB*AB является AC*AC + BC*BC
+AB*AB является AB*AH + AB*BH

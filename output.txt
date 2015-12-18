@@ -1,3 +1,240 @@
-Сократ есть Человек
-Сократ есть Смерть
-Человек есть Смерть
+AB часть AB*AB
+AB часть AC*AC + BC*BC
+AB часть ΔACB
+AB состоит из AH
+AB состоит из BH
+AB часть AB*AH
+AB часть AB*BH
+AB часть AB*AH + AB*BH
+AB является AH + BH
+AC часть AC*AC
+AC часть AC*AC + BC*BC
+AC часть ΔACB
+AC часть ΔAHC
+AC часть AB*AH + AB*BH
+BC часть BC*BC
+BC часть AC*AC + BC*BC
+BC часть ΔACB
+BC часть ΔCHB
+BC часть AB*AH + AB*BH
+CH часть ΔACB
+CH часть ΔAHC
+CH часть ΔCHB
+∠AHC является ∠BHC
+∠AHC является ∠ACB
+∠AHC часть ΔACB
+∠AHC часть ΔAHC
+∠AHC часть ΔCHB
+∠BHC является ∠AHC
+∠BHC является ∠ACB
+∠BHC часть ΔACB
+∠BHC часть ΔAHC
+∠BHC часть ΔCHB
+α является α
+α является 90-β
+α является ∠BAC
+α является ∠CAH
+α является ∠HCB
+α часть ΔACB
+α часть ΔAHC
+α часть ΔCHB
+90-α является 90-α
+90-α является β
+90-α является ∠ABC
+90-α является ∠ACH
+90-α является ∠CBH
+90-α часть ΔACB
+90-α часть ΔAHC
+90-α часть ΔCHB
+β является 90-α
+β является β
+β является ∠ABC
+β является ∠ACH
+β является ∠CBH
+β часть ΔACB
+β часть ΔAHC
+β часть ΔCHB
+90-β является α
+90-β является 90-β
+90-β является ∠BAC
+90-β является ∠CAH
+90-β является ∠HCB
+90-β часть ΔACB
+90-β часть ΔAHC
+90-β часть ΔCHB
+∠ACB является ∠AHC
+∠ACB является ∠BHC
+∠ACB часть ΔACB
+∠ACB часть ΔAHC
+∠ACB часть ΔCHB
+∠BAC является α
+∠BAC является 90-β
+∠BAC является ∠BAC
+∠BAC является ∠CAH
+∠BAC является ∠HCB
+∠BAC часть ΔACB
+∠BAC часть ΔAHC
+∠BAC часть ΔCHB
+∠ABC является 90-α
+∠ABC является β
+∠ABC является ∠ABC
+∠ABC является ∠ACH
+∠ABC является ∠CBH
+∠ABC часть ΔACB
+∠ABC часть ΔAHC
+∠ABC часть ΔCHB
+∠ACH является 90-α
+∠ACH является β
+∠ACH является ∠ABC
+∠ACH является ∠ACH
+∠ACH является ∠CBH
+∠ACH часть ΔACB
+∠ACH часть ΔAHC
+∠ACH часть ΔCHB
+∠CAH является α
+∠CAH является 90-β
+∠CAH является ∠BAC
+∠CAH является ∠CAH
+∠CAH является ∠HCB
+∠CAH часть ΔACB
+∠CAH часть ΔAHC
+∠CAH часть ΔCHB
+∠HCB является α
+∠HCB является 90-β
+∠HCB является ∠BAC
+∠HCB является ∠CAH
+∠HCB является ∠HCB
+∠HCB часть ΔACB
+∠HCB часть ΔAHC
+∠HCB часть ΔCHB
+∠CBH является 90-α
+∠CBH является β
+∠CBH является ∠ABC
+∠CBH является ∠ACH
+∠CBH является ∠CBH
+∠CBH часть ΔACB
+∠CBH часть ΔAHC
+∠CBH часть ΔCHB
+AB*AB состоит из AB
+AB*AB является AC*AC + BC*BC
+AB*AB является AB*AH + AB*BH
+AC*AC состоит из AC
+AC*AC часть AC*AC + BC*BC
+AC*AC является AB*AH
+AC*AC часть AB*AH + AB*BH
+BC*BC состоит из BC
+BC*BC часть AC*AC + BC*BC
+BC*BC является AB*BH
+BC*BC часть AB*AH + AB*BH
+AC*AC + BC*BC состоит из AB
+AC*AC + BC*BC состоит из AC
+AC*AC + BC*BC состоит из BC
+AC*AC + BC*BC является AB*AB
+AC*AC + BC*BC состоит из AC*AC
+AC*AC + BC*BC состоит из BC*BC
+AC*AC + BC*BC состоит из AH
+AC*AC + BC*BC состоит из BH
+AC*AC + BC*BC состоит из AB*AH
+AC*AC + BC*BC состоит из AB*BH
+AC*AC + BC*BC является AB*AH + AB*BH
+ΔACB состоит из AB
+ΔACB состоит из AC
+ΔACB состоит из BC
+ΔACB состоит из CH
+ΔACB состоит из ∠AHC
+ΔACB состоит из ∠BHC
+ΔACB состоит из α
+ΔACB состоит из 90-α
+ΔACB состоит из β
+ΔACB состоит из 90-β
+ΔACB состоит из ∠ACB
+ΔACB состоит из ∠BAC
+ΔACB состоит из ∠ABC
+ΔACB состоит из ∠ACH
+ΔACB состоит из ∠CAH
+ΔACB состоит из ∠HCB
+ΔACB состоит из ∠CBH
+ΔACB состоит из ΔAHC
+ΔACB состоит из ΔCHB
+ΔACB часть ΔAHC ~ ΔACB
+ΔACB часть ΔCHB ~ ΔACB
+ΔAHC состоит из AC
+ΔAHC состоит из CH
+ΔAHC состоит из ∠AHC
+ΔAHC состоит из ∠BHC
+ΔAHC состоит из α
+ΔAHC состоит из 90-α
+ΔAHC состоит из β
+ΔAHC состоит из 90-β
+ΔAHC состоит из ∠ACB
+ΔAHC состоит из ∠BAC
+ΔAHC состоит из ∠ABC
+ΔAHC состоит из ∠ACH
+ΔAHC состоит из ∠CAH
+ΔAHC состоит из ∠HCB
+ΔAHC состоит из ∠CBH
+ΔAHC часть ΔACB
+ΔAHC часть ΔAHC ~ ΔACB
+ΔAHC часть ΔAHC ~ ΔCHB
+ΔAHC состоит из AH
+ΔCHB состоит из BC
+ΔCHB состоит из CH
+ΔCHB состоит из ∠AHC
+ΔCHB состоит из ∠BHC
+ΔCHB состоит из α
+ΔCHB состоит из 90-α
+ΔCHB состоит из β
+ΔCHB состоит из 90-β
+ΔCHB состоит из ∠ACB
+ΔCHB состоит из ∠BAC
+ΔCHB состоит из ∠ABC
+ΔCHB состоит из ∠ACH
+ΔCHB состоит из ∠CAH
+ΔCHB состоит из ∠HCB
+ΔCHB состоит из ∠CBH
+ΔCHB часть ΔACB
+ΔCHB часть ΔCHB ~ ΔACB
+ΔCHB часть ΔAHC ~ ΔCHB
+ΔCHB состоит из BH
+ΔAHC ~ ΔACB состоит из ΔACB
+ΔAHC ~ ΔACB состоит из ΔAHC
+ΔCHB ~ ΔACB состоит из ΔACB
+ΔCHB ~ ΔACB состоит из ΔCHB
+ΔAHC ~ ΔCHB состоит из ΔAHC
+ΔAHC ~ ΔCHB состоит из ΔCHB
+AH часть AB
+AH часть AC*AC + BC*BC
+AH часть ΔAHC
+AH часть AB*AH
+AH часть AB*AH + AB*BH
+AH часть AH + BH
+BH часть AB
+BH часть AC*AC + BC*BC
+BH часть ΔCHB
+BH часть AB*BH
+BH часть AB*AH + AB*BH
+BH часть AH + BH
+AB*AH состоит из AB
+AB*AH является AC*AC
+AB*AH часть AC*AC + BC*BC
+AB*AH состоит из AH
+AB*AH часть AB*AH + AB*BH
+AB*BH состоит из AB
+AB*BH является BC*BC
+AB*BH часть AC*AC + BC*BC
+AB*BH состоит из BH
+AB*BH часть AB*AH + AB*BH
+AB*AH + AB*BH состоит из AB
+AB*AH + AB*BH состоит из AC
+AB*AH + AB*BH состоит из BC
+AB*AH + AB*BH является AB*AB
+AB*AH + AB*BH состоит из AC*AC
+AB*AH + AB*BH состоит из BC*BC
+AB*AH + AB*BH является AC*AC + BC*BC
+AB*AH + AB*BH состоит из AH
+AB*AH + AB*BH состоит из BH
+AB*AH + AB*BH состоит из AB*AH
+AB*AH + AB*BH состоит из AB*BH
+AH + BH является AB
+AH + BH состоит из AH
+AH + BH состоит из BH

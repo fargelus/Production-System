@@ -60,8 +60,9 @@ def add_rules(matrix):
     matrix_size = len(matrix)
     matrix = add_transitivity(matrix.copy(), matrix_size)
     matrix = add_links_partof_cont(matrix.copy(), matrix_size)
-    add_similarity(matrix.copy(), matrix_size)
-    # print_matrix(matrix)
+    matrix = add_similarity(matrix.copy(), matrix_size)
+    matrix = add_distributivus(matrix.copy(), matrix_size)
+
     return matrix
 
 
@@ -217,6 +218,7 @@ def add_another_partof_cont_links(part_of_list, cont_of_list, matrix, size):
                     matrix[j][each_item] = 2
                     matrix[each_item][j] = 3
 
+    new_links = []
     for item in cont_of_list:
         to_vertex_list = item[1:]
         from_vertex = item[0]
@@ -225,6 +227,18 @@ def add_another_partof_cont_links(part_of_list, cont_of_list, matrix, size):
                 if matrix[vertex][j] == 1:
                     matrix[from_vertex][j] = 3
                     matrix[j][from_vertex] = 2
+                    new_links.append([from_vertex, j])
+
+    # если что-то часть чего-то большого, то все
+    # объекты из которых состоит это что-то являются
+    # частью этого супер объекта
+    for each_link in new_links:
+        to = each_link[-1]
+        from_ = each_link[0]
+        for i in range(size):
+            if matrix[to][i] == 3:
+                matrix[from_][i] = 3
+                matrix[i][from_] = 2
 
     return matrix
 
@@ -244,6 +258,7 @@ def add_similarity(matrix, size):
 
     matrix = make_similarity(matrix.copy(), angles_in_obj[:])
     matrix = make_ratio(matrix.copy(), size)
+    return matrix
 
 
 def get_simil_triangle_list():
@@ -313,8 +328,40 @@ def print_matrix(matrix):
 
 
 def parse_matrix(matrix):
-    filename = '/home/dima/Рабочий стол/Production System/buffer.txt'
-    pass
+    output_filename = '/home/dima/Рабочий стол/Production System/output.txt'
+    output = open(output_filename, 'w')
+
+    euristic_filename = '/home/dima/Рабочий стол/Production System/euristic.txt'
+    euristic = open(euristic_filename, 'w')
+    is_are = ' является '
+    part_of = ' часть '
+    contains_of = ' состоит из '
+
+    size = len(matrix)
+    for i in range(size):
+        for j in range(size):
+            if matrix[i][j] == 1:
+                from_ = ENTITY[str(i+1)]
+                to = ENTITY[str(j+1)]
+                output.write(from_ + is_are + to + '\n')
+            elif matrix[i][j] == 2:
+                from_ = ENTITY[str(i+1)]
+                to = ENTITY[str(j+1)]
+                output.write(from_ + part_of + to + '\n')
+            elif matrix[i][j] == 3:
+                from_ = ENTITY[str(i+1)]
+                to = ENTITY[str(j+1)]
+                output.write(from_ + contains_of + to + '\n')
+            else:
+                pass
+
+    str_to_find = 'AB*AB'
+    vals_keys = get_vals_keys()
+    key = int(vals_keys[str_to_find]) - 1
+    for j in range(size):
+        if matrix[key][j] == 1:
+            to = ENTITY[str(j+1)]
+            euristic.write(str_to_find + is_are + to + '\n')
 
 
 def make_ratio(matrix, size):
@@ -327,7 +374,7 @@ def make_ratio(matrix, size):
             if select_col:
                 number_simils.append(select_col)
 
-    vals_keys = {ENTITY[key]: key for key in ENTITY.keys()}
+    vals_keys = get_vals_keys()
     for item in number_simils:
         for j in range(size):
             if matrix[item][j] == 3:
@@ -342,56 +389,83 @@ def make_ratio(matrix, size):
                     matrix[main_from_][main_to] = 1
                     matrix[main_to][main_from_] = 1
 
-    matrix = divide_multiple_objects(matrix.copy(), size)
+    matrix = divide_multiple_objects(matrix.copy())
 
     new_part_of_list = make_vertex_list(matrix.copy(), size, 2)
     new_cont_of_list = make_vertex_list(matrix.copy(), size, 3)
     matrix = add_another_partof_cont_links(new_part_of_list, new_cont_of_list, matrix.copy(), size)
 
-    composite_obj_list = sorted(get_multiple_obj())
-    composite_obj_list = [obj for obj in composite_obj_list if '~' not in ENTITY[str(obj+1)]]
-    print(composite_obj_list)
+    # если что-то состоит из одинаковых элементов
+    # с чем-то, то делаем между ними связь является
+    new_cont_of_list = make_vertex_list(matrix.copy(), size, 3)
+    out = []
+    in_ = []
+    for i in range(len(new_cont_of_list)):
+        mult_obj = new_cont_of_list[i][0]
+        parts = new_cont_of_list[i][1:]
+        for j in range(len(new_cont_of_list) - 1, -1, -1):
+            if i == j:
+                continue
+            compare_mult_obj = new_cont_of_list[j][0]
+            compare_parts = new_cont_of_list[j][1:]
+            if compare_parts == parts \
+                    and mult_obj not in compare_parts and compare_mult_obj not in parts:
+                out.append(mult_obj)
+                in_.append(compare_mult_obj)
 
-    for item in composite_obj_list:
-        print(ENTITY[str(item+1)], 'состоит из: ')
-        for j in range(size):
-            if matrix[item][j] == 3:
-                print(ENTITY[str(j+1)], end=' ')
-        print()
+    for key_from, key_to in zip(out, in_):
+        if matrix[key_from][key_to] != 1:
+            matrix[key_from][key_to] = 1
+        if matrix[key_to][key_from] != 1:
+            matrix[key_to][key_from] = 1
 
     return matrix
 
 
-def divide_multiple_objects(matrix, size):
+def get_vals_keys():
+    return {ENTITY[key]: key for key in ENTITY.keys()}
+
+
+def divide_multiple_objects(matrix):
     """ сделать связи part of, contains of для составных
         объектов """
-    vals_keys = {ENTITY[key]: key for key in ENTITY.keys()}
+    vals_keys = get_vals_keys()
     mult_objects = get_multiple_obj()
+    mult_objects = sorted([obj for obj in mult_objects if '~' not in ENTITY[str(obj+1)]])
+
     for item in mult_objects:
         object = ENTITY[str(item+1)]
-        middle = len(object) // 2
-        add_all_links(object, middle, matrix, vals_keys)
+        parsed_string = ''.join(c if (c.isalpha() or c == '*' or c == '~') else ' ' for c in object)
+        if len(parsed_string) == 5:
+            matrix = divide_simple(item, parsed_string, matrix.copy(),
+                                       vals_keys.copy())
+        else:
+            simple_objs = parsed_string.split(' ')
+            for obj in simple_objs:
+                if obj:
+                    obj = obj.strip()
+                    val = int(vals_keys[obj]) - 1
+                    matrix[item][val] = 3
+                    matrix[val][item] = 2
+                    if len(obj) == 5:
+                        matrix = divide_simple(item, obj, matrix.copy(),
+                                               vals_keys.copy())
 
     return matrix
 
 
-def add_all_links(object, middle, matrix, vals_keys):
-    if middle <= 1:
-        return
-    left_side = object[:middle]
-    left_side = left_side.strip()
-    right_side = object[middle:]
-    right_side = right_side.strip()
-    if len(left_side) == len(right_side) == 2:
-        key_from = int(vals_keys[object]) - 1
-        key_to_right = int(vals_keys[left_side]) - 1
-        key_to_left = int(vals_keys[right_side]) - 1
-        matrix[key_from][key_to_left] = 3
-        matrix[key_from][key_to_right] = 3
-        matrix[key_to_left][key_from] = 2
-        matrix[key_to_right][key_from] = 2
-    add_all_links(left_side, len(left_side)//2, matrix, vals_keys)
-    add_all_links(right_side, len(right_side)//2, matrix, vals_keys)
+def divide_simple(number, composite_obj, matrix, vals_keys):
+    simple_objs = composite_obj.split('*')
+    if simple_objs[0] == simple_objs[1]:
+        val = int(vals_keys[simple_objs[0]]) - 1
+        matrix[number][val] = 3
+        matrix[val][number] = 2
+    else:
+        for obj in simple_objs:
+            val = int(vals_keys[obj]) - 1
+            matrix[number][val] = 3
+            matrix[val][number] = 2
+    return matrix
 
 
 def get_multiple_obj():
@@ -403,8 +477,82 @@ def get_triangle_list():
                      and len(ENTITY[key]) == 4])
 
 
+def add_distributivus(matrix, size):
+    composite_objs = get_multiple_obj()
+    composite_objs = [obj for obj in composite_objs if '+' in ENTITY[str(obj+1)]]
+    composite_objs.sort()
+
+    for each_item in composite_objs:
+        object = ENTITY[str(each_item + 1)]
+        parsed_string = ''.join(c if c.isalpha() else ' ' for c in object)
+        list_of_objects = parsed_string.split(' ')
+        unique = []
+        for i in range(len(list_of_objects)):
+            for j in range(len(list_of_objects) - 1, -1, -1):
+                if i == j:
+                    continue
+                if list_of_objects[i] == list_of_objects[j]:
+                    if abs(i-j) >= 2:
+                        if list_of_objects[i] not in unique:
+                            unique.append(list_of_objects[i])
+        if unique:
+            matrix = make_new_obj(object, unique, matrix.copy(), size)
+
+    return matrix
+
+
+def make_new_obj(obj, unique, matrix, size):
+    val = unique[0]
+    new_str = ''
+    location = -1
+    indexes = []
+    while True:
+        location = obj.find(val, location + 1)
+        if location == -1:
+            break
+        else:
+            indexes.append(location + 3)
+
+    new_str += val + '*('
+    for i in indexes:
+        j = i
+        while True:
+            if obj[j] == ' ':
+                new_str += ' + '
+                break
+            if j == len(obj) - 1:
+                new_str += obj[j] + ')'
+                break
+            new_str += obj[j]
+            j += 1
+
+    left_braces = new_str.find('(') + 1
+    right_braces = new_str.find(')')
+    find_object = new_str[left_braces:right_braces]
+
+    val_keys = get_vals_keys()
+    if find_object in val_keys.keys():
+        number = int(val_keys[find_object]) - 1
+        for j in range(size):
+            if matrix[number][j] == 1:
+                match_obj = ENTITY[str(j+1)]
+                new_str = new_str[:left_braces - 1] + match_obj
+                if new_str in val_keys.keys():
+                    number_to_connect = int(val_keys[new_str]) - 1
+                    number_from_connect = int(val_keys[obj]) - 1
+                    matrix[number_from_connect][number_to_connect] = 1
+                    matrix[number_to_connect][number_from_connect] = 1
+                    for k in range(size):
+                        if matrix[number_from_connect][k] == 1:
+                            if ENTITY[str(k+1)] != new_str:
+                                matrix[k][number_to_connect] = 1
+                                matrix[number_to_connect][k] = 1
+
+    return matrix
+
+
 def main(records):
     parse_base(records)
     matrix = make_graph(records)
     matrix = add_rules(matrix.copy())
-    # parse_matrix(matrix)
+    parse_matrix(matrix)
