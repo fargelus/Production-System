@@ -36,8 +36,8 @@ def make_graph(records):
 
 
 def parse_rels(matrix):
-    size = len(matrix)
-
+    """ ф-ия парсит отношения и заполняет матрицу
+        смежности новыми значениям """
     for key in sorted(RELS):
         for val in RELS[key]:
             if val['type'] == 'is are':
@@ -62,6 +62,8 @@ def add_rules(matrix):
     matrix = add_transitivity(matrix.copy(), matrix_size)
     matrix = add_links_partof_cont(matrix.copy(), matrix_size)
     matrix = add_similarity(matrix.copy(), matrix_size)
+
+    # добавить правило дистрибутивности
     matrix = add_distributivus(matrix.copy(), matrix_size)
 
     return matrix
@@ -108,7 +110,7 @@ def add_transitivity(matrix, size):
 
 
 def make_vertex_list(matrix, size, type):
-    # создадим списки всех изменяющихся вершин
+    """ создадим списки всех изменяющихся вершин """
     verts = []
     if type == 1:
         for i in range(size):
@@ -245,6 +247,7 @@ def add_another_partof_cont_links(part_of_list, cont_of_list, matrix, size):
 
 
 def add_similarity(matrix, size):
+    """" добавляем правило подобия """
     multiple_objs = make_vertex_list(matrix, size, 3)
 
     angles_in_obj = []
@@ -257,12 +260,16 @@ def add_similarity(matrix, size):
             first_one.extend(temp_list)
             angles_in_obj.append(first_one)
 
+    # добавляем усл-е подобия
     matrix = make_similarity(matrix.copy(), angles_in_obj[:])
+
+    # формируем отношение сходственных сторон
     matrix = make_ratio(matrix.copy(), size)
     return matrix
 
 
 def get_simil_triangle_list():
+    """ ф-ия возвращает список подобных треугольников """
     return [int(keys) - 1 for keys in ENTITY if '~' in ENTITY[keys]]
 
 
@@ -329,6 +336,7 @@ def print_matrix(matrix):
 
 
 def parse_matrix(matrix):
+    """ фун-ия парсит матрицу и выводит данные в файл """
     output_filename = '/home/dima/Рабочий стол/Production System/output.txt'
     output = open(output_filename, 'w')
 
@@ -366,6 +374,7 @@ def parse_matrix(matrix):
 
 
 def make_ratio(matrix, size):
+    """ формируются отношения сходственных сторон для подобных треугольников """
     simil_triangle = sorted(get_simil_triangle_list())
 
     number_simils = []
@@ -390,6 +399,7 @@ def make_ratio(matrix, size):
                     matrix[main_from_][main_to] = 1
                     matrix[main_to][main_from_] = 1
 
+    # делим составные объекты
     matrix = divide_multiple_objects(matrix.copy())
 
     new_part_of_list = make_vertex_list(matrix.copy(), size, 2)
@@ -424,6 +434,7 @@ def make_ratio(matrix, size):
 
 
 def get_vals_keys():
+    """ получить словарь значение-ключ """
     return {ENTITY[key]: key for key in ENTITY.keys()}
 
 
@@ -456,6 +467,7 @@ def divide_multiple_objects(matrix):
 
 
 def divide_simple(number, composite_obj, matrix, vals_keys):
+    """ получаем атомарные объекты """
     simple_objs = composite_obj.split('*')
     if simple_objs[0] == simple_objs[1]:
         val = int(vals_keys[simple_objs[0]]) - 1
@@ -479,6 +491,7 @@ def get_triangle_list():
 
 
 def add_distributivus(matrix, size):
+    """ ф-ия добавляет условие дистрибутивности относительно сложения """
     composite_objs = get_multiple_obj()
     composite_objs = [obj for obj in composite_objs if '+' in ENTITY[str(obj+1)]]
     composite_objs.sort()
@@ -503,6 +516,7 @@ def add_distributivus(matrix, size):
 
 
 def make_new_obj(obj, unique, matrix, size):
+    """ после применения правила дистрибутивности создадим новый объект """
     val = unique[0]
     new_str = ''
     location = -1
@@ -531,6 +545,7 @@ def make_new_obj(obj, unique, matrix, size):
     right_braces = new_str.find(')')
     find_object = new_str[left_braces:right_braces]
 
+    # ищем связи is_are для нового объекта
     val_keys = get_vals_keys()
     if find_object in val_keys.keys():
         number = int(val_keys[find_object]) - 1

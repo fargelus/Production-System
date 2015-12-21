@@ -34,14 +34,10 @@ class Entrance(Frame):
                             'Вы хотите выбрать другой файл?')
             if answ:
                 self.entry.delete(0, END)
-                open_file = askopenfilename(defaultextension='.db', filetypes=[('Database', '.db'),
-                                                                               ('SQLite3', '.sqlite3'),
-                                                                               ('SQLite', '.sqlite')])
+                open_file = askopenfilename(defaultextension='.json', filetypes=[('JSON', '.json')])
                 self.entry.insert(0, open_file)
         else:
-            open_file = askopenfilename(defaultextension='.db', filetypes=[('Database', '.db'),
-                                                                           ('SQLite3', '.sqlite3'),
-                                                                           ('SQLite', '.sqlite')])
+            open_file = askopenfilename(defaultextension='.json', filetypes=[('JSON', '.json')])
             self.entry.insert(0, open_file)
 
     def read_file(self):
